@@ -47,3 +47,16 @@ pub fn main() !void {
         std.debug.print("{d:.3} + {d:.3}i\n", .{ v.re, v.im });
     }
 }
+
+test "fft compiles and runs on simple input" {
+    var allocator = std.heap.page_allocator;
+
+    var signal = try allocator.alloc(std.math.Complex(f64), 8);
+    defer allocator.free(signal);
+
+    for (signal, 0..) |*v, i| {
+        v.* = .{ .re = @floatFromInt(i), .im = 0.0 };
+    }
+
+    fft(signal);
+}
