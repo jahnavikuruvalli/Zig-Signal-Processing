@@ -20,17 +20,6 @@ This repository prioritizes **understanding and correctness** over heavy optimiz
 
 ---
 
-## 📁 Repository Structure
-
-src/
-├── fft/            # Frequency-domain transforms
-├── filters/        # Digital filters (IIR, Butterworth, filtfilt)
-├── detection/      # Peak detection algorithms
-├── metrics/        # Time-domain variability metrics
-├── signals/        # Synthetic test signal generators
-
----
-
 ## ✅ Implemented Components
 
 ### 🔁 Fast Fourier Transform (FFT)
