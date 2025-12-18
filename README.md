@@ -70,20 +70,6 @@ Synthetic signals allow **deterministic testing** without relying on real biomed
 
 ---
 
-## 🧰 Typical Pipeline
-
-Synthetic / real signal
-↓
-Digital filtering
-↓
-Peak detection
-↓
-RR interval extraction
-↓
-Time-domain variability metrics
-
----
-
 ## ⚠️ Disclaimer
 
 This repository is **not intended to replace highly optimized DSP libraries** such as FFTW or platform-specific implementations.
