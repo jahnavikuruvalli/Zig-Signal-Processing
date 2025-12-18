@@ -43,12 +43,11 @@ These filters are designed with **biomedical frequency bands** in mind.
 
 ---
 
-## 🔮 Planned Additions
-
-- 📈 Peak detection in noisy signals (e.g., ECG R-peaks)
-- ❤️ Time-domain HRV metrics (SDNN, RMSSD)
-- 🧪 Synthetic signal generators for testing
-- 📊 Simple visual validation tools
+### ❤️ Time-Domain Variability Metrics
+- RR interval computation
+- SDNN
+- RMSSD
+- pNN50
 
 ---
 
