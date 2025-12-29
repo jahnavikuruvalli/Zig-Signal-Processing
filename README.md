@@ -1,54 +1,72 @@
 # 🧠 Zig Signal Processing
 
 A collection of **core digital signal processing (DSP) primitives** implemented in **Zig** ⚡  
-Built from first principles with an emphasis on **clarity, correctness, and learning**.
+Built from first principles with an emphasis on **clarity, correctness, and reusability**.
 
-This repository serves as a **modular signal-processing backbone** for the **BioSense Prism** project, which focuses on biomedical signal analysis such as **ECG** and **EMG**.  
-The code is intentionally kept independent and reusable beyond the parent application.
-
----
-
-## 🎯 Project Goals
-
-- Understand DSP algorithms at a **mathematical and implementation level**
-- Avoid black-box libraries in favor of **transparent, readable code**
-- Explore DSP in a **systems-level language (Zig)**
-- Build reusable primitives applicable to **biomedical signals**
+This repository serves as a **modular signal-processing core** developed alongside the  
+**BioSense Prism** project, which focuses on biomedical signal analysis (e.g., ECG, EMG).  
+All components here are written to be **independent, testable, and reusable** beyond the parent application.
 
 ---
 
-## ✅ Currently Implemented
+## 🎯 Project Philosophy
+
+- Learn and implement DSP algorithms **from first principles**
+- Avoid black-box libraries in favor of **transparent implementations**
+- Explore signal processing in a **systems-level language (Zig)**
+- Build a clean DSP pipeline suitable for **biomedical signals**
+
+This repository prioritizes **understanding and correctness** over heavy optimization.
+
+---
+
+## ✅ Implemented Components
 
 ### 🔁 Fast Fourier Transform (FFT)
 - Recursive **Cooley–Tukey FFT**
 - Complex-valued input and output
-- Converts **time-domain signals → frequency domain**
+- Converts **time-domain → frequency-domain** signals
 - Suitable for ECG/EMG spectral analysis
 
 ---
 
-## 🛠️ Implemented Filters
+### 🎚️ Digital Filters
+- First-order **low-pass**, **high-pass**, and **band-pass** filters
+- 2nd-order **Butterworth band-pass** filter
+- Zero-phase filtering using forward–backward IIR processing (`filtfilt`)
 
-### 🎚️ First-Order Filters
-- Low-pass filter
-- High-pass filter
-- Band-pass filter (HPF → LPF cascade)
-
-### 🧮 Butterworth Filters
-- 2nd-order Butterworth band-pass filter
-- Coefficient generation using bilinear transform
-- Zero-phase filtering using forward-backward (`filtfilt`) IIR processing
-
-These filters are designed with **biomedical frequency bands** in mind.
+Designed with **biomedical frequency bands** in mind.
 
 ---
 
-## 🔮 Planned Additions
+### 📍 Peak Detection
+- Generic peak detection in noisy 1D signals
+- Uses:
+  - derivative
+  - squaring
+  - moving-average smoothing
+  - adaptive thresholding
+  - refractory period enforcement
+- Suitable for ECG R-peak detection and similar event-based signals
 
-- 📈 Peak detection in noisy signals (e.g., ECG R-peaks)
-- ❤️ Time-domain HRV metrics (SDNN, RMSSD)
-- 🧪 Synthetic signal generators for testing
-- 📊 Simple visual validation tools
+---
+
+### ❤️ Time-Domain Variability Metrics
+- RR interval computation (milliseconds)
+- **SDNN**
+- **RMSSD**
+- **pNN50**
+
+These metrics are commonly used in heart-rate variability (HRV) analysis but are implemented here in a **general, signal-agnostic** form.
+
+---
+
+### 🧪 Synthetic Test Signals
+- Sine wave generator (FFT and filter validation)
+- Noisy peak signal (peak detection testing)
+- Simple synthetic ECG-like waveform (end-to-end pipeline testing)
+
+Synthetic signals allow **deterministic testing** without relying on real biomedical data.
 
 ---
 
@@ -56,11 +74,17 @@ These filters are designed with **biomedical frequency bands** in mind.
 
 This repository is **not intended to replace highly optimized DSP libraries** such as FFTW or platform-specific implementations.
 
+It is an **educational and experimental codebase** intended to:
+- deepen understanding of DSP fundamentals
+- explore biomedical signal processing concepts
+- support applied research and prototyping
+
 ---
 
 ## 🔗 Related Project
 
-- **BioSense Prism** – Biomedical signal acquisition and analysis system  
+- **BioSense Prism**  
+  Biomedical signal acquisition and analysis system  
   *(This repository provides the signal-processing core for BioSense Prism.)*
 
 
