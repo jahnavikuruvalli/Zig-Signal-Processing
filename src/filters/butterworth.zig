@@ -1,12 +1,29 @@
 const std = @import("std");
 
-//2nd-order Butterworth Bandpass
+/// IIR filter coefficients for a second-order digital filter.
+pub const IIRCoefficients = struct {
+    /// Numerator coefficients (b0, b1, b2)
+    b: [3]f64,
+    /// Denominator coefficients (a0, a1, a2), where a0 = 1
+    a: [3]f64,
+};
 
+/// Design a second-order Butterworth bandpass filter.
+///
+/// - Frequencies are specified in Hz
+/// - Sampling rate `fs` is in Hz
+///
+/// This function returns digital IIR coefficients suitable for
+/// use with an IIR filter implementation (e.g., filtfilt).
+///
+/// Notes:
+/// - Uses bilinear transform with frequency pre-warping
+/// - Provides a maximally flat passband
 pub fn butterworthBandpass(
     fs: f64,
     low: f64,
     high: f64,
-) struct { b: [3]f64, a: [3]f64 } {
+) IIRCoefficients {
     const w1 = std.math.tan(std.math.pi * low / fs);
     const w2 = std.math.tan(std.math.pi * high / fs);
 

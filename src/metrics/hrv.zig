@@ -1,6 +1,8 @@
 const std = @import("std");
 
 /// Compute RR intervals (in milliseconds) from detected peak indices.
+///
+/// Returns an error if fewer than two peaks are provided.
 pub fn rrIntervals(
     allocator: std.mem.Allocator,
     peaks: []usize,
@@ -19,13 +21,16 @@ pub fn rrIntervals(
     return rr;
 }
 
+/// Compute the arithmetic mean of a slice.
 fn mean(data: []f64) f64 {
     var sum: f64 = 0.0;
     for (data) |v| sum += v;
     return sum / @as(f64, @floatFromInt(data.len));
 }
 
-/// Standard deviation of NN (RR) intervals.
+/// Standard deviation of NN (RR) intervals (SDNN).
+///
+/// Units: milliseconds.
 pub fn sdnn(rr: []f64) f64 {
     const mu = mean(rr);
 
@@ -38,7 +43,9 @@ pub fn sdnn(rr: []f64) f64 {
     return std.math.sqrt(sum_sq / @as(f64, @floatFromInt(rr.len - 1)));
 }
 
-/// Root mean square of successive differences.
+/// Root mean square of successive differences (RMSSD).
+///
+/// Units: milliseconds.
 pub fn rmssd(rr: []f64) f64 {
     var sum_sq: f64 = 0.0;
 
@@ -50,7 +57,9 @@ pub fn rmssd(rr: []f64) f64 {
     return std.math.sqrt(sum_sq / @as(f64, @floatFromInt(rr.len - 1)));
 }
 
-/// Percentage of successive RR differences greater than 50 ms.
+/// Percentage of successive RR differences greater than 50 ms (pNN50).
+///
+/// Units: percentage.
 pub fn pnn50(rr: []f64) f64 {
     var count: usize = 0;
 
@@ -64,14 +73,16 @@ pub fn pnn50(rr: []f64) f64 {
         @as(f64, @floatFromInt(rr.len - 1))) * 100.0;
 }
 
-/// Common time-domain variability metrics.
+/// Common time-domain heart rate variability metrics.
 pub const HRV = struct {
     sdnn: f64,
     rmssd: f64,
     pnn50: f64,
 };
 
-/// Compute standard time-domain variability metrics from peak indices.
+/// Compute standard time-domain HRV metrics from detected peaks.
+///
+/// Returns SDNN, RMSSD, and pNN50.
 pub fn computeHRV(
     allocator: std.mem.Allocator,
     peaks: []usize,

@@ -1,19 +1,24 @@
 const std = @import("std");
-const fft = @import("fft");
+const signal = @import("zig-signal");
+const fft = signal.fft;
 
 pub fn main() !void {
-    var allocator = std.heap.page_allocator;
+    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
+    defer _ = gpa.deinit();
+    const allocator = gpa.allocator();
 
-    const signal = try allocator.alloc(std.math.Complex(f64), 8);
-    defer allocator.free(signal);
+    // FIXED: Changed 'var' to 'const'.
+    // You can still modify the numbers inside the array.
+    const data = try allocator.alloc(f64, 8);
+    defer allocator.free(data);
 
-    for (signal, 0..) |*v, i| {
-        v.* = .{ .re = @floatFromInt(i), .im = 0.0 };
+    for (data, 0..) |*v, i| {
+        v.* = @floatFromInt(i);
     }
 
-    fft.fft(signal);
+    try fft.fftInPlace(allocator, data);
 
-    for (signal) |v| {
-        std.debug.print("{d:.3} + {d:.3}i\n", .{ v.re, v.im });
+    for (data) |v| {
+        std.debug.print("{d}\n", .{v});
     }
 }
