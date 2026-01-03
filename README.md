@@ -1,90 +1,193 @@
-# 🧠 Zig Signal Processing
+# Zig-Signal-Processing
 
-A collection of **core digital signal processing (DSP) primitives** implemented in **Zig** ⚡  
-Built from first principles with an emphasis on **clarity, correctness, and reusability**.
+A lightweight, dependency-free **digital signal processing (DSP) library** written in **Zig**.
 
-This repository serves as a **modular signal-processing core** developed alongside the  
-**BioSense Prism** project, which focuses on biomedical signal analysis (e.g., ECG, EMG).  
-All components here are written to be **independent, testable, and reusable** beyond the parent application.
-
----
-
-## 🎯 Project Philosophy
-
-- Learn and implement DSP algorithms **from first principles**
-- Avoid black-box libraries in favor of **transparent implementations**
-- Explore signal processing in a **systems-level language (Zig)**
-- Build a clean DSP pipeline suitable for **biomedical signals**
-
-This repository prioritizes **understanding and correctness** over heavy optimization.
+This library provides **first-principles implementations** of common DSP algorithms with a
+focus on **clarity, correctness, and testability**, rather than black-box abstractions.
+It is particularly suited for **biomedical signal processing** (e.g., ECG) and
+as a foundation for **embedded or bare-metal DSP systems**.
 
 ---
 
-## ✅ Implemented Components
+## Motivation
 
-### 🔁 Fast Fourier Transform (FFT)
-- Recursive **Cooley–Tukey FFT**
-- Complex-valued input and output
-- Converts **time-domain → frequency-domain** signals
-- Suitable for ECG/EMG spectral analysis
+Most student DSP projects:
+- rely heavily on external libraries
+- hide important numerical and signal-processing details
+- are difficult to reuse or extend
+
+This project takes a different approach:
+
+- Algorithms are implemented from scratch
+- Memory ownership is explicit via allocators
+- Tests reflect **real physical and numerical behavior**
+- Code is written to be readable, auditable, and extensible
+
+The goal is to build a **clean DSP core** that can later be reused in:
+- embedded firmware
+- biomedical instrumentation
+- custom MCU or SoC projects
 
 ---
 
-### 🎚️ Digital Filters
-- First-order **low-pass**, **high-pass**, and **band-pass** filters
-- 2nd-order **Butterworth band-pass** filter
-- Zero-phase filtering using forward–backward IIR processing (`filtfilt`)
+## Features
 
-Designed with **biomedical frequency bands** in mind.
+### Frequency Domain
+- Recursive Cooley–Tukey FFT
+- In-place magnitude spectrum computation
+- Verified using impulse, symmetry, and zero-input tests
 
----
+### Digital Filtering
+- First-order low-pass and high-pass IIR filters
+- Second-order Butterworth bandpass filter design
+- Zero-phase forward–backward filtering (`filtfilt`)
 
-### 📍 Peak Detection
-- Generic peak detection in noisy 1D signals
-- Uses:
+### Biomedical Signal Processing
+- R-peak detection pipeline:
   - derivative
   - squaring
-  - moving-average smoothing
+  - moving-average integration
   - adaptive thresholding
-  - refractory period enforcement
-- Suitable for ECG R-peak detection and similar event-based signals
+- RR-interval extraction
+- Time-domain HRV metrics:
+  - SDNN
+  - RMSSD
+  - pNN50
+
+### Signal Generators (for testing & validation)
+- Sine waves
+- Noisy peak signals
+- Synthetic ECG waveform generator
 
 ---
 
-### ❤️ Time-Domain Variability Metrics
-- RR interval computation (milliseconds)
-- **SDNN**
-- **RMSSD**
-- **pNN50**
+## Project Structure
 
-These metrics are commonly used in heart-rate variability (HRV) analysis but are implemented here in a **general, signal-agnostic** form.
+```
 
----
+src/
+├── fft/              # FFT implementation
+├── filters/          # IIR filters, Butterworth, filtfilt
+├── detection/        # Peak detection algorithms
+├── metrics/          # HRV metrics
+├── signals/          # Synthetic signal generators
+├── signal.zig        # Public library entry point
+└── tests.zig         # Test runner
 
-### 🧪 Synthetic Test Signals
-- Sine wave generator (FFT and filter validation)
-- Noisy peak signal (peak detection testing)
-- Simple synthetic ECG-like waveform (end-to-end pipeline testing)
+````
 
-Synthetic signals allow **deterministic testing** without relying on real biomedical data.
-
----
-
-## ⚠️ Disclaimer
-
-This repository is **not intended to replace highly optimized DSP libraries** such as FFTW or platform-specific implementations.
-
-It is an **educational and experimental codebase** intended to:
-- deepen understanding of DSP fundamentals
-- explore biomedical signal processing concepts
-- support applied research and prototyping
+`signal.zig` is the **only intended public entry point**.
 
 ---
 
-## 🔗 Related Project
+## Usage
 
-- **BioSense Prism**  
-  Biomedical signal acquisition and analysis system  
-  *(This repository provides the signal-processing core for BioSense Prism.)*
+Import the library:
 
+```zig
+const signal = @import("signal.zig");
+````
 
+### FFT
+
+```zig
+try signal.fft.fftInPlace(allocator, data);
+```
+
+### Zero-phase Bandpass Filtering (ECG)
+
+```zig
+const filtered = try signal.filters.filtfilt.filtfilt(
+    allocator,
+    ecg,
+    fs,
+    0.5,
+    40.0,
+);
+```
+
+### R-Peak Detection
+
+```zig
+const peaks = try signal.detection.detectPeaksFromSignal(
+    allocator,
+    filtered,
+    fs,
+);
+```
+
+### HRV Metrics
+
+```zig
+const hrv = try signal.metrics.computeHRV(
+    allocator,
+    peaks,
+    fs,
+);
+```
+
+---
+
+## Testing
+
+All functionality is tested using Zig’s built-in test framework.
+
+Run the complete test suite:
+
+```bash
+zig test src/tests.zig
+```
+
+### Testing Philosophy
+
+* Tests validate **behavior**, not exact numerical equality
+* Transient effects and numerical tolerances are respected
+* Synthetic signals are used for deterministic validation
+* Tests reflect **real DSP system behavior**, not idealized math
+
+---
+
+## Design Principles
+
+* No external DSP libraries
+* No hidden memory allocations
+* Explicit allocator usage everywhere
+* Clear separation between:
+
+  * algorithm design
+  * signal processing
+  * domain-specific logic
+* Tests are treated as **first-class code**
+
+This library intentionally prioritizes **understanding and correctness**
+over premature optimization.
+
+---
+
+## Status
+
+* **Version:** v0.1.0
+* **Zig:** 0.15+
+* **License:** MIT (recommended)
+
+This project is considered **stable as a learning and foundation library**
+and is intended to evolve toward embedded and biomedical applications.
+
+---
+
+## Future Directions
+
+Planned or possible extensions include:
+
+* fixed-point (Q15/Q31) DSP for microcontrollers
+* padding-aware `filtfilt` implementation
+* frequency-domain HRV metrics
+* real-time streaming pipelines
+* integration with custom MCU firmware
+
+---
+
+## Author
+
+Developed as a foundational DSP and biomedical signal-processing project,
+with the goal of building reusable, transparent, and testable signal-processing code in Zig.
