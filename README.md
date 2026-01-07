@@ -11,7 +11,7 @@ This library provides **first-principles implementations** of common DSP algorit
 Synthetic ECG signal processed using a zero-phase Butterworth bandpass filter,
 with R-peaks detected using an energy-based pipeline and refined to waveform maxima.
 
-![ECG R-peak Detection Demo]([https://github.com/jahnavikuruvalli/Zig-Signal-Processing/issues/1#issue-3787711350](https://private-user-images.githubusercontent.com/240754959/532715665-54e4f74f-414d-44f8-b587-6ab470bc5c50.png?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3Njc3NzI1NjYsIm5iZiI6MTc2Nzc3MjI2NiwicGF0aCI6Ii8yNDA3NTQ5NTkvNTMyNzE1NjY1LTU0ZTRmNzRmLTQxNGQtNDRmOC1iNTg3LTZhYjQ3MGJjNWM1MC5wbmc_WC1BbXotQWxnb3JpdGhtPUFXUzQtSE1BQy1TSEEyNTYmWC1BbXotQ3JlZGVudGlhbD1BS0lBVkNPRFlMU0E1M1BRSzRaQSUyRjIwMjYwMTA3JTJGdXMtZWFzdC0xJTJGczMlMkZhd3M0X3JlcXVlc3QmWC1BbXotRGF0ZT0yMDI2MDEwN1QwNzUxMDZaJlgtQW16LUV4cGlyZXM9MzAwJlgtQW16LVNpZ25hdHVyZT04MzZmMjg3N2NkYzMxODcwMDNmODFlNzE0ZGZiYWM5MzZjYzAyN2FiZDUyNmYyZjZkYjVhOTUwNGRlODdhMDNkJlgtQW16LVNpZ25lZEhlYWRlcnM9aG9zdCJ9.UNTft0PQP4XWne4KGv6Mntf-uieMivMnYlmflLBi1cE))
+![ECG R-peak Detection Demo]([https://user-images.githubusercontent.com/240754959/532715665-54e4f74f-414d-44f8-b587-6ab470bc5c50.png])
 
 ---
 
