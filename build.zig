@@ -14,7 +14,6 @@ pub fn build(b: *std.Build) void {
     // Example executable
     const exe = b.addExecutable(.{
         .name = "fft_example",
-        // FIXED: Zig 0.15 requires target/optimize inside a root_module definition
         .root_module = b.createModule(.{
             .root_source_file = b.path("examples/fft_example.zig"),
             .target = target,
