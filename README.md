@@ -168,7 +168,7 @@ over premature optimization.
 
 * **Version:** v0.1.0
 * **Zig:** 0.15+
-* **License:** MIT (recommended)
+* **License:** MIT 
 
 This project is considered **stable as a learning and foundation library**
 and is intended to evolve toward embedded and biomedical applications.
