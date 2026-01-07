@@ -1,32 +1,40 @@
 # Zig-Signal-Processing
 
-A lightweight, dependency-free **digital signal processing (DSP) library** written in **Zig**.
+A lightweight, dependency-free digital signal processing (DSP) library written in Zig.
 
-This library provides **first-principles implementations** of common DSP algorithms with a
-focus on **clarity, correctness, and testability**, rather than black-box abstractions.
-It is particularly suited for **biomedical signal processing** (e.g., ECG) and
-as a foundation for **embedded or bare-metal DSP systems**.
+This library provides **first-principles implementations** of common DSP algorithms with a focus on **clarity, correctness, and testability**, rather than black-box abstractions. It is particularly suited for **biomedical signal processing (e.g., ECG)** and as a foundation for **embedded or bare-metal DSP systems**.
+
+---
+
+## Demo
+
+Synthetic ECG signal processed using a zero-phase Butterworth bandpass filter,
+with R-peaks detected using an energy-based pipeline and refined to waveform maxima.
+
+![ECG R-peak Detection Demo](https://github.com/jahnavikuruvalli/Zig-Signal-Processing/issues/1#issue-3787711350)
 
 ---
 
 ## Motivation
 
 Most student DSP projects:
-- rely heavily on external libraries
-- hide important numerical and signal-processing details
-- are difficult to reuse or extend
+
+- rely heavily on external libraries  
+- hide important numerical and signal-processing details  
+- are difficult to reuse or extend  
 
 This project takes a different approach:
 
-- Algorithms are implemented from scratch
-- Memory ownership is explicit via allocators
-- Tests reflect **real physical and numerical behavior**
-- Code is written to be readable, auditable, and extensible
+- Algorithms are implemented from scratch  
+- Memory ownership is explicit via allocators  
+- Tests reflect real physical and numerical behavior  
+- Code is written to be readable, auditable, and extensible  
 
 The goal is to build a **clean DSP core** that can later be reused in:
-- embedded firmware
-- biomedical instrumentation
-- custom MCU or SoC projects
+
+- embedded firmware  
+- biomedical instrumentation  
+- custom MCU or SoC projects  
 
 ---
 
@@ -48,6 +56,7 @@ The goal is to build a **clean DSP core** that can later be reused in:
   - squaring
   - moving-average integration
   - adaptive thresholding
+  - peak refinement to waveform maxima
 - RR-interval extraction
 - Time-domain HRV metrics:
   - SDNN
@@ -76,7 +85,7 @@ src/
 
 ````
 
-`signal.zig` is the **only intended public entry point**.
+`signal.zig` is the only intended public entry point.
 
 ---
 
@@ -140,10 +149,10 @@ zig test src/tests.zig
 
 ### Testing Philosophy
 
-* Tests validate **behavior**, not exact numerical equality
+* Tests validate behavior, not exact numerical equality
 * Transient effects and numerical tolerances are respected
 * Synthetic signals are used for deterministic validation
-* Tests reflect **real DSP system behavior**, not idealized math
+* Tests reflect real DSP system behavior, not idealized math
 
 ---
 
@@ -157,10 +166,9 @@ zig test src/tests.zig
   * algorithm design
   * signal processing
   * domain-specific logic
-* Tests are treated as **first-class code**
+* Tests are treated as first-class code
 
-This library intentionally prioritizes **understanding and correctness**
-over premature optimization.
+This library intentionally prioritizes **understanding and correctness over premature optimization**.
 
 ---
 
@@ -168,10 +176,9 @@ over premature optimization.
 
 * **Version:** v0.1.0
 * **Zig:** 0.15+
-* **License:** MIT 
+* **License:** MIT
 
-This project is considered **stable as a learning and foundation library**
-and is intended to evolve toward embedded and biomedical applications.
+This project is considered stable as a learning and foundation library and is intended to evolve toward embedded and biomedical applications.
 
 ---
 
@@ -189,5 +196,6 @@ Planned or possible extensions include:
 
 ## Author
 
-Developed as a foundational DSP and biomedical signal-processing project,
-with the goal of building reusable, transparent, and testable signal-processing code in Zig.
+Developed as a foundational DSP and biomedical signal-processing project, with the goal of building reusable, transparent, and testable signal-processing code in Zig.
+
+```
