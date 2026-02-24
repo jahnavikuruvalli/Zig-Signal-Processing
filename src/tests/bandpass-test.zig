@@ -1,6 +1,6 @@
 const std = @import("std");
-const Biquad = @import("biquad.zig").Biquad;
-const Cascade = @import("bandpass.zig").BiquadCascade;
+const Biquad = @import("../core/biquad.zig").Biquad;
+const Cascade = @import("../core/bandpass.zig").BiquadCascade;
 
 test "cascade passes zero input" {
     var stages = [_]Biquad{

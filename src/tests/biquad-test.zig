@@ -1,5 +1,5 @@
 const std = @import("std");
-const Biquad = @import("biquad.zig").Biquad;
+const Biquad = @import("../core/biquad.zig").Biquad;
 
 test "biquad zero input produces zero output" {
     var filter = Biquad.init(

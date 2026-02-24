@@ -1,5 +1,5 @@
 const std = @import("std");
-const Squaring = @import("square.zig").Squaring;
+const Squaring = @import("../core/square.zig").Squaring;
 
 test "square produces positive energy" {
     var s = Squaring{};

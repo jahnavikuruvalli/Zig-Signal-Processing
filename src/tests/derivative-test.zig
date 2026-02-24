@@ -1,5 +1,5 @@
 const std = @import("std");
-const Derivative = @import("derivative.zig").Derivative;
+const Derivative = @import("../core/derivative.zig").Derivative;
 
 test "derivative detects change" {
     var d = Derivative{};

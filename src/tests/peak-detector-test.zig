@@ -1,5 +1,5 @@
 const std = @import("std");
-const PD = @import("peak-detector.zig").PeakDetector;
+const PD = @import("../core/peak-detector.zig").PeakDetector;
 
 test "detect simple peaks" {
     var pd = PD.init(5);

@@ -1,4 +1,4 @@
-pub const StageFn = fn (ctx: *anyopaque, x: f32) f32;
+pub const StageFn = *const fn (ctx: *anyopaque, x: f32) f32;
 
 pub const Stage = struct {
     ctx: *anyopaque,

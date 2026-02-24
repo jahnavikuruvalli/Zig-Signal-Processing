@@ -1,7 +1,7 @@
 const std = @import("std");
-const SineOsc = @import("signal-source.zig").SineOsc;
-const Biquad = @import("biquad.zig").Biquad;
-const Cascade = @import("bandpass.zig").BiquadCascade;
+const SineOsc = @import("../examples/signal-source.zig").SineOsc;
+const Biquad = @import("../core/biquad.zig").Biquad;
+const Cascade = @import("../core/bandpass.zig").BiquadCascade;
 
 test "streaming processing runs over time" {
 

@@ -1,5 +1,5 @@
 const std = @import("std");
-const MovingAverage = @import("moving-average.zig").MovingAverage;
+const MovingAverage = @import("../core/moving-average.zig").MovingAverage;
 
 test "moving average smooths signal" {
     var buf: [4]f32 = undefined;
