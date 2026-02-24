@@ -28,6 +28,16 @@ pub const Biquad = struct {
         };
     }
 
+    pub fn fromOnePole(c: anytype) Biquad {
+        return Biquad{
+            .b0 = c.b0,
+            .b1 = c.b1,
+            .b2 = 0.0,
+            .a1 = c.a1,
+            .a2 = 0.0,
+        };
+    }
+
     pub fn reset(self: *Biquad) void {
         self.z1 = 0.0;
         self.z2 = 0.0;

@@ -19,4 +19,6 @@ test {
     _ = @import("tests/peak-detector-test.zig");
     _ = @import("tests/pipeline-test.zig");
     _ = @import("tests/stream-demo-test.zig");
+    _ = @import("tests/onepole-test.zig");
+    _ = @import("tests/design-to-filter-test.zig");
 }
