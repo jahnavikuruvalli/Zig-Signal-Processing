@@ -1,5 +1,5 @@
 const std = @import("std");
-const signal = @import("zig-signal");
+const signal = @import("signal");
 const fft = signal.fft;
 
 pub fn main() !void {

@@ -4,15 +4,13 @@ pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
 
-    // Public module: zig-signal
-    const signal_module = b.addModule("zig-signal", .{
+    // Public library module: signal
+    const signal_module = b.addModule("signal", .{
         .root_source_file = b.path("src/signal.zig"),
-        .target = target,
-        .optimize = optimize,
     });
 
-    // Example executable
-    const exe = b.addExecutable(.{
+    // FFT example executable
+    const fft_example = b.addExecutable(.{
         .name = "fft_example",
         .root_module = b.createModule(.{
             .root_source_file = b.path("examples/fft_example.zig"),
@@ -21,17 +19,28 @@ pub fn build(b: *std.Build) void {
         }),
     });
 
-    // Make zig-signal available to the example
-    exe.root_module.addImport("zig-signal", signal_module);
+    fft_example.root_module.addImport("signal", signal_module);
+    b.installArtifact(fft_example);
 
-    b.installArtifact(exe);
+    // ECG demo executable
+    const ecg_demo = b.addExecutable(.{
+        .name = "ecg_demo",
+        .root_module = b.createModule(.{
+            .root_source_file = b.path("examples/ecg_demo.zig"),
+            .target = target,
+            .optimize = optimize,
+        }),
+    });
 
-    // Run step
-    const run_cmd = b.addRunArtifact(exe);
-    if (b.args) |args| {
-        run_cmd.addArgs(args);
-    }
+    ecg_demo.root_module.addImport("signal", signal_module);
+    b.installArtifact(ecg_demo);
 
-    const run_step = b.step("run", "Run fft_example");
-    run_step.dependOn(&run_cmd.step);
+    // Run steps
+    const run_fft = b.addRunArtifact(fft_example);
+    const run_fft_step = b.step("run-fft", "Run FFT example");
+    run_fft_step.dependOn(&run_fft.step);
+
+    const run_ecg = b.addRunArtifact(ecg_demo);
+    const run_ecg_step = b.step("run-ecg", "Run ECG demo");
+    run_ecg_step.dependOn(&run_ecg.step);
 }
