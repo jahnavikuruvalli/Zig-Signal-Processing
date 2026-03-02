@@ -161,7 +161,7 @@ zig test src/tests.zig
 
 ## Status
 
-**Version:** v0.2 (streaming architecture rewrite)
+**Version:** v2.0 (streaming architecture rewrite)
 **Zig:** 0.15+
 **License:** MIT
 
