@@ -37,3 +37,17 @@ pub const signals = struct {
     pub const noisy_peaks = @import("signals/noisy-peaks.zig");
     pub const synthetic_ecg = @import("signals/synthetic-ecg.zig");
 };
+
+pub const core = struct {
+    pub const Biquad = @import("core/biquad.zig").Biquad;
+    pub const Pipeline = @import("core/pipeline.zig").Pipeline;
+};
+
+pub const design = struct {
+    pub const onepole = @import("design/onepole.zig");
+};
+
+pub fn lowpass(fs: f32, cutoff: f32) core.Biquad {
+    const coeff = design.onepole.lowpass(fs, cutoff);
+    return core.Biquad.fromOnePole(coeff);
+}

@@ -70,7 +70,7 @@ fn detectPeaks(
         if (v > max_val) max_val = v;
     }
 
-    const threshold = 0.3 * max_val;
+    const threshold = 0.15 * max_val;
     var last_peak: isize = -@as(isize, @intCast(refractory));
 
     for (1..signal.len - 1) |i| {
@@ -79,21 +79,37 @@ fn detectPeaks(
             signal[i] > signal[i + 1] and
             @as(isize, @intCast(i)) - last_peak >= @as(isize, @intCast(refractory)))
         {
-            try peaks.append(allocator, i);
+            try peaks.append(allocator, i); // Fixed: removed .allocator
             last_peak = @as(isize, @intCast(i));
         }
     }
 
-    return peaks.toOwnedSlice(allocator);
+    return peaks.toOwnedSlice(allocator); // Fixed: removed .allocator
+}
+
+/// Helper to refine peak location to local maximum
+fn snapToLocalMax(
+    signal: []f64,
+    idx: usize,
+    radius: usize,
+) usize {
+    var best = idx;
+    var best_val = signal[idx];
+
+    const start = if (idx > radius) idx - radius else 0;
+    const end = @min(signal.len - 1, idx + radius);
+
+    var i = start;
+    while (i <= end) : (i += 1) {
+        if (signal[i] > best_val) {
+            best_val = signal[i];
+            best = i;
+        }
+    }
+    return best;
 }
 
 /// High-level peak detection pipeline for noisy signals.
-///
-/// This function implements a derivative → squaring → moving-average
-/// pipeline commonly used for ECG R-peak detection.
-///
-/// Returns indices of detected peaks.
-/// The returned slice is heap-allocated and must be freed by the caller.
 pub fn detectPeaksFromSignal(
     allocator: std.mem.Allocator,
     signal: []f64,
@@ -109,7 +125,17 @@ pub fn detectPeaksFromSignal(
     const ma = try movingAverage(allocator, sq, window);
     defer allocator.free(ma);
 
-    return detectPeaks(allocator, ma, fs);
+    const rough = try detectPeaks(allocator, ma, fs);
+    // Note: rough is freed at the end, but we need a new slice for refined
+
+    var refined = try allocator.alloc(usize, rough.len);
+
+    for (rough, 0..) |p, i| {
+        refined[i] = snapToLocalMax(signal, p, @as(usize, @intFromFloat(0.05 * fs)));
+    }
+
+    allocator.free(rough);
+    return refined;
 }
 
 test "detectPeaksFromSignal detects physiologically plausible peaks in synthetic ECG" {
@@ -121,9 +147,9 @@ test "detectPeaksFromSignal detects physiologically plausible peaks in synthetic
     const duration = 4.0;
     const heart_rate = 60.0;
 
-    const signal = @import("../signal.zig");
+    const signal_lib = @import("../signal.zig"); // Renamed to avoid shadowing
 
-    const ecg = try signal.signals.synthetic_ecg.syntheticECG(
+    const ecg = try signal_lib.signals.synthetic_ecg.syntheticECG(
         allocator,
         fs,
         duration,
