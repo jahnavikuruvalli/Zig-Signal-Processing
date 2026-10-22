@@ -1,0 +1,13 @@
+.{
+    .name = .zig_signal,
+    .fingerprint = 0x385c4e727f166b62,
+    .version = "2.1.0",
+    .minimum_zig_version = "0.15.0",
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+        "src",
+        "LICENSE",
+        "README.md",
+    },
+}

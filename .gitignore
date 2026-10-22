@@ -2,3 +2,5 @@
 zig-cache/
 zig-out/
 .DS_Store
+ecg_output.csv
+__pycache__/

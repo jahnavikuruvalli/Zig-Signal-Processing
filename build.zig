@@ -13,12 +13,11 @@ pub fn build(b: *std.Build) void {
     const fft_example = b.addExecutable(.{
         .name = "fft_example",
         .root_module = b.createModule(.{
-            .root_source_file = b.path("examples/fft_example.zig"),
+            .root_source_file = b.path("src/examples/fft_example.zig"),
             .target = target,
             .optimize = optimize,
         }),
     });
-
     fft_example.root_module.addImport("signal", signal_module);
     b.installArtifact(fft_example);
 
@@ -26,12 +25,11 @@ pub fn build(b: *std.Build) void {
     const ecg_demo = b.addExecutable(.{
         .name = "ecg_demo",
         .root_module = b.createModule(.{
-            .root_source_file = b.path("examples/ecg_demo.zig"),
+            .root_source_file = b.path("src/examples/ecg_demo.zig"),
             .target = target,
             .optimize = optimize,
         }),
     });
-
     ecg_demo.root_module.addImport("signal", signal_module);
     b.installArtifact(ecg_demo);
 
@@ -43,4 +41,16 @@ pub fn build(b: *std.Build) void {
     const run_ecg = b.addRunArtifact(ecg_demo);
     const run_ecg_step = b.step("run-ecg", "Run ECG demo");
     run_ecg_step.dependOn(&run_ecg.step);
+
+    // Unit tests: `zig build test`
+    const lib_tests = b.addTest(.{
+        .root_module = b.createModule(.{
+            .root_source_file = b.path("src/tests.zig"),
+            .target = target,
+            .optimize = optimize,
+        }),
+    });
+    const run_tests = b.addRunArtifact(lib_tests);
+    const test_step = b.step("test", "Run all unit tests");
+    test_step.dependOn(&run_tests.step);
 }
