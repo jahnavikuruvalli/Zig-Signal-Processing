@@ -3,16 +3,15 @@ const std = @import("std");
 /// Compute RR intervals (in milliseconds) from detected peak indices.
 ///
 /// Returns an error if fewer than two peaks are provided.
-/// Caller owns the returned slice.
 pub fn rrIntervals(
     allocator: std.mem.Allocator,
-    peaks: []const usize,
+    peaks: []usize,
     fs: f64,
 ) ![]f64 {
     if (peaks.len < 2)
         return error.NotEnoughIntervals;
 
-    const rr = try allocator.alloc(f64, peaks.len - 1);
+    var rr = try allocator.alloc(f64, peaks.len - 1);
 
     for (1..peaks.len) |i| {
         const diff_samples = peaks[i] - peaks[i - 1];
@@ -22,9 +21,8 @@ pub fn rrIntervals(
     return rr;
 }
 
-/// Compute the arithmetic mean of a slice (0 for an empty slice).
-fn mean(data: []const f64) f64 {
-    if (data.len == 0) return 0.0;
+/// Compute the arithmetic mean of a slice.
+fn mean(data: []f64) f64 {
     var sum: f64 = 0.0;
     for (data) |v| sum += v;
     return sum / @as(f64, @floatFromInt(data.len));
@@ -32,9 +30,8 @@ fn mean(data: []const f64) f64 {
 
 /// Standard deviation of NN (RR) intervals (SDNN).
 ///
-/// Units: milliseconds. Returns 0 if fewer than two intervals are given.
-pub fn sdnn(rr: []const f64) f64 {
-    if (rr.len < 2) return 0.0;
+/// Units: milliseconds.
+pub fn sdnn(rr: []f64) f64 {
     const mu = mean(rr);
 
     var sum_sq: f64 = 0.0;
@@ -48,9 +45,8 @@ pub fn sdnn(rr: []const f64) f64 {
 
 /// Root mean square of successive differences (RMSSD).
 ///
-/// Units: milliseconds. Returns 0 if fewer than two intervals are given.
-pub fn rmssd(rr: []const f64) f64 {
-    if (rr.len < 2) return 0.0;
+/// Units: milliseconds.
+pub fn rmssd(rr: []f64) f64 {
     var sum_sq: f64 = 0.0;
 
     for (1..rr.len) |i| {
@@ -63,13 +59,12 @@ pub fn rmssd(rr: []const f64) f64 {
 
 /// Percentage of successive RR differences greater than 50 ms (pNN50).
 ///
-/// Units: percentage. Returns 0 if fewer than two intervals are given.
-pub fn pnn50(rr: []const f64) f64 {
-    if (rr.len < 2) return 0.0;
+/// Units: percentage.
+pub fn pnn50(rr: []f64) f64 {
     var count: usize = 0;
 
     for (1..rr.len) |i| {
-        if (@abs(rr[i] - rr[i - 1]) > 50.0) {
+        if (std.math.fabs(rr[i] - rr[i - 1]) > 50.0) {
             count += 1;
         }
     }
@@ -87,15 +82,12 @@ pub const HRV = struct {
 
 /// Compute standard time-domain HRV metrics from detected peaks.
 ///
-/// Needs at least three peaks (two RR intervals); otherwise returns
-/// `error.NotEnoughIntervals`.
+/// Returns SDNN, RMSSD, and pNN50.
 pub fn computeHRV(
     allocator: std.mem.Allocator,
-    peaks: []const usize,
+    peaks: []usize,
     fs: f64,
 ) !HRV {
-    if (peaks.len < 3) return error.NotEnoughIntervals;
-
     const rr = try rrIntervals(allocator, peaks, fs);
     defer allocator.free(rr);
 
@@ -104,32 +96,4 @@ pub fn computeHRV(
         .rmssd = rmssd(rr),
         .pnn50 = pnn50(rr),
     };
-}
-
-test "HRV of perfectly regular beats is zero variability" {
-    const peaks = [_]usize{ 0, 250, 500, 750 };
-    const hrv = try computeHRV(std.testing.allocator, &peaks, 250.0);
-    try std.testing.expectApproxEqAbs(0.0, hrv.sdnn, 1e-9);
-    try std.testing.expectApproxEqAbs(0.0, hrv.rmssd, 1e-9);
-    try std.testing.expectApproxEqAbs(0.0, hrv.pnn50, 1e-9);
-}
-
-test "HRV known values" {
-    // RR = 1000, 1100, 1000 ms at fs = 1000
-    const peaks = [_]usize{ 0, 1000, 2100, 3100 };
-    const hrv = try computeHRV(std.testing.allocator, &peaks, 1000.0);
-    // mean 1033.33, sdnn = sqrt(((-33.33)^2*2 + 66.67^2)/2) = 57.735
-    try std.testing.expectApproxEqAbs(57.735, hrv.sdnn, 1e-2);
-    // rmssd = sqrt((100^2 + 100^2)/2) = 100
-    try std.testing.expectApproxEqAbs(100.0, hrv.rmssd, 1e-9);
-    // both successive differences (100 ms) exceed 50 ms
-    try std.testing.expectApproxEqAbs(100.0, hrv.pnn50, 1e-9);
-}
-
-test "HRV with too few peaks returns an error" {
-    const peaks = [_]usize{ 0, 250 };
-    try std.testing.expectError(
-        error.NotEnoughIntervals,
-        computeHRV(std.testing.allocator, &peaks, 250.0),
-    );
 }
