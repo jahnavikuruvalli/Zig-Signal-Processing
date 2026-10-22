@@ -4,3 +4,9 @@ zig-out/
 .DS_Store
 ecg_output.csv
 __pycache__/
+psd_signal.csv
+psd_output.csv
+psd_plot.png
+psd_output.csv
+psd_signal.csv
+psd_plot.png

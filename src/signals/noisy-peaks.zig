@@ -9,8 +9,15 @@ pub fn noisyPeaks(
     peak_interval: f64,
     noise_level: f64,
 ) ![]f64 {
-    const n_samples = @as(usize, @intFromFloat(duration * fs));
-    const peak_samples = @as(usize, @intFromFloat(peak_interval * fs));
+    if (!(fs > 0.0 and std.math.isFinite(fs))) return error.InvalidParameter;
+    if (!(duration >= 0.0 and std.math.isFinite(duration))) return error.InvalidParameter;
+    if (!(peak_interval >= 0.0 and std.math.isFinite(peak_interval))) return error.InvalidParameter;
+
+    const n_f = duration * fs;
+    const p_f = peak_interval * fs;
+    if (!(n_f < 4.0e9 and p_f < 4.0e9)) return error.InvalidParameter;
+    const n_samples = @as(usize, @intFromFloat(n_f));
+    const peak_samples = @as(usize, @intFromFloat(p_f));
     if (peak_samples == 0) return error.InvalidPeakInterval;
 
     const out = try allocator.alloc(f64, n_samples);

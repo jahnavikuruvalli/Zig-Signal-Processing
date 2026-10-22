@@ -32,9 +32,9 @@ fn mean(data: []const f64) f64 {
 
 /// Standard deviation of NN (RR) intervals (SDNN).
 ///
-/// Units: milliseconds. Returns 0 if fewer than two intervals are given.
+/// Units: milliseconds. Returns NaN (undefined) with fewer than two intervals.
 pub fn sdnn(rr: []const f64) f64 {
-    if (rr.len < 2) return 0.0;
+    if (rr.len < 2) return std.math.nan(f64);
     const mu = mean(rr);
 
     var sum_sq: f64 = 0.0;
@@ -48,9 +48,9 @@ pub fn sdnn(rr: []const f64) f64 {
 
 /// Root mean square of successive differences (RMSSD).
 ///
-/// Units: milliseconds. Returns 0 if fewer than two intervals are given.
+/// Units: milliseconds. Returns NaN (undefined) with fewer than two intervals.
 pub fn rmssd(rr: []const f64) f64 {
-    if (rr.len < 2) return 0.0;
+    if (rr.len < 2) return std.math.nan(f64);
     var sum_sq: f64 = 0.0;
 
     for (1..rr.len) |i| {
@@ -63,9 +63,9 @@ pub fn rmssd(rr: []const f64) f64 {
 
 /// Percentage of successive RR differences greater than 50 ms (pNN50).
 ///
-/// Units: percentage. Returns 0 if fewer than two intervals are given.
+/// Units: percentage. Returns NaN (undefined) with fewer than two intervals.
 pub fn pnn50(rr: []const f64) f64 {
-    if (rr.len < 2) return 0.0;
+    if (rr.len < 2) return std.math.nan(f64);
     var count: usize = 0;
 
     for (1..rr.len) |i| {
@@ -132,4 +132,22 @@ test "HRV with too few peaks returns an error" {
         error.NotEnoughIntervals,
         computeHRV(std.testing.allocator, &peaks, 250.0),
     );
+}
+
+test "metrics are NaN (undefined) for fewer than two intervals" {
+    const one = [_]f64{800.0};
+    const none = [_]f64{};
+    try std.testing.expect(std.math.isNan(sdnn(&one)));
+    try std.testing.expect(std.math.isNan(rmssd(&one)));
+    try std.testing.expect(std.math.isNan(pnn50(&one)));
+    try std.testing.expect(std.math.isNan(pnn50(&none)));
+}
+
+test "HRV from irregular peaks" {
+    // RR = 1000, 1000, 1200 ms at fs = 250
+    const peaks = [_]usize{ 0, 250, 500, 800 };
+    const hrv = try computeHRV(std.testing.allocator, &peaks, 250.0);
+    try std.testing.expectApproxEqAbs(115.47, hrv.sdnn, 1e-2);
+    try std.testing.expectApproxEqAbs(141.42, hrv.rmssd, 1e-2);
+    try std.testing.expectApproxEqAbs(50.0, hrv.pnn50, 1e-9);
 }

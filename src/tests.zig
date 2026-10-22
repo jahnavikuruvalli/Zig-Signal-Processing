@@ -22,6 +22,12 @@ test {
     _ = @import("signals/sine.zig");
     _ = @import("signals/noisy-peaks.zig");
     _ = @import("signals/synthetic-ecg.zig");
+    _ = @import("signals/noise.zig");
+    _ = @import("spectral/window.zig");
+    _ = @import("spectral/psd.zig");
+    _ = @import("spectral/nonparametric.zig");
+    _ = @import("spectral/parametric.zig");
+    _ = @import("spectral/spectral.zig");
     _ = @import("core/biquad.zig");
     _ = @import("core/bandpass.zig");
     _ = @import("core/derivative.zig");
@@ -43,4 +49,16 @@ test {
     _ = @import("tests/onepole-test.zig");
     _ = @import("tests/design-to-filter-test.zig");
     _ = @import("tests/public-api-test.zig");
+    _ = @import("tests/spectral-test.zig");
+    _ = @import("tests/regression-test.zig");
+    _ = @import("tests/spectral-test.zig");
+    _ = @import("tests/regression-test.zig");
+
+    // spectral estimation
+    _ = @import("spectral/spectral.zig");
+    _ = @import("spectral/window.zig");
+    _ = @import("spectral/psd.zig");
+    _ = @import("spectral/nonparametric.zig");
+    _ = @import("spectral/parametric.zig");
+    _ = @import("signals/noise.zig");
 }

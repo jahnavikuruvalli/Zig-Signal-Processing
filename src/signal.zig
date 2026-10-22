@@ -36,7 +36,13 @@ pub const signals = struct {
     pub const sine = @import("signals/sine.zig");
     pub const noisy_peaks = @import("signals/noisy-peaks.zig");
     pub const synthetic_ecg = @import("signals/synthetic-ecg.zig");
+    pub const noise = @import("signals/noise.zig");
 };
+
+/// Power spectral density estimation: periodogram, modified periodogram,
+/// Bartlett, Welch, Yule-Walker and Burg
+/// Usage: signal.spectral.welch(...)
+pub const spectral = @import("spectral/spectral.zig");
 
 /// Streaming (sample-by-sample) building blocks
 pub const core = struct {
