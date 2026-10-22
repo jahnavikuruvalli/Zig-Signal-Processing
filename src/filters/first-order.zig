@@ -8,11 +8,12 @@ const std = @import("std");
 /// The returned buffer is heap-allocated and must be freed by the caller.
 pub fn lowPass(
     allocator: std.mem.Allocator,
-    input: []f64,
+    input: []const f64,
     fs: f64,
     cutoff: f64,
 ) ![]f64 {
-    var output = try allocator.alloc(f64, input.len);
+    const output = try allocator.alloc(f64, input.len);
+    if (input.len == 0) return output;
 
     const alpha =
         (2.0 * std.math.pi * cutoff) /
@@ -35,11 +36,12 @@ pub fn lowPass(
 /// The returned buffer is heap-allocated and must be freed by the caller.
 pub fn highPass(
     allocator: std.mem.Allocator,
-    input: []f64,
+    input: []const f64,
     fs: f64,
     cutoff: f64,
 ) ![]f64 {
-    var output = try allocator.alloc(f64, input.len);
+    const output = try allocator.alloc(f64, input.len);
+    if (input.len == 0) return output;
 
     const alpha = fs / (fs + 2.0 * std.math.pi * cutoff);
 
@@ -62,7 +64,7 @@ pub fn highPass(
 /// Not zero-phase; use Butterworth + filtfilt for ECG-grade filtering.
 pub fn firstOrderBandPass(
     allocator: std.mem.Allocator,
-    input: []f64,
+    input: []const f64,
     fs: f64,
     low: f64,
     high: f64,
@@ -74,14 +76,12 @@ pub fn firstOrderBandPass(
 }
 
 test "lowPass smooths step signal" {
-    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
-    defer _ = gpa.deinit();
-    const allocator = gpa.allocator();
+    const allocator = std.testing.allocator;
 
     const fs = 100.0;
     const cutoff = 5.0;
 
-    var input = [_]f64{ 0, 0, 0, 1, 1, 1, 1, 1 };
+    const input = [_]f64{ 0, 0, 0, 1, 1, 1, 1, 1 };
 
     const output = try lowPass(
         allocator,
@@ -103,14 +103,12 @@ test "lowPass smooths step signal" {
 }
 
 test "highPass attenuates DC component" {
-    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
-    defer _ = gpa.deinit();
-    const allocator = gpa.allocator();
+    const allocator = std.testing.allocator;
 
     const fs = 100.0;
     const cutoff = 5.0;
 
-    var input = [_]f64{ 1, 1, 1, 1, 1, 1, 1, 1 };
+    const input = [_]f64{ 1, 1, 1, 1, 1, 1, 1, 1 };
 
     const output = try highPass(
         allocator,
@@ -124,4 +122,15 @@ test "highPass attenuates DC component" {
     for (4..output.len) |i| {
         try std.testing.expect(@abs(output[i]) < 0.5);
     }
+}
+
+test "filters accept empty input" {
+    const allocator = std.testing.allocator;
+    const empty = [_]f64{};
+    const a = try lowPass(allocator, &empty, 100.0, 5.0);
+    defer allocator.free(a);
+    const b = try highPass(allocator, &empty, 100.0, 5.0);
+    defer allocator.free(b);
+    try std.testing.expectEqual(@as(usize, 0), a.len);
+    try std.testing.expectEqual(@as(usize, 0), b.len);
 }
